@@ -23,8 +23,30 @@ const money = (n: number) => n.toLocaleString('zh-CN');
 const makeId = () => globalThis.crypto?.randomUUID?.() ?? `q-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 export function generateQuestion(filter = 'all'): GeneratedQuestion {
-  const kind = filter === 'all' ? pick(['growth', 'fraction', 'cut', 'average']) : filter;
+  const kind = filter === 'all' ? pick(['growth', 'fraction', 'cut', 'average', 'table']) : filter;
   const scenario = pick(scenarios);
+
+  if (kind === 'table') {
+    const base = integer(600, 2400);
+    const rate = pick([6, 8, 10, 12, 15, 18, 20]);
+    const current = base * (1 + rate / 100);
+    const otherBase = integer(300, 1500);
+    const otherCurrent = Math.round(otherBase * (1 + pick([4, 9, 13, 17]) / 100));
+    const answer = Number(rate.toFixed(1));
+    return {
+      id: makeId(), skill: 'growth', title: '资料分析表格题',
+      prompt: `${scenario.name}主要指标统计（单位：亿元）
+指标                 2024年       2025年
+${scenario.a.padEnd(18, ' ')} ${money(base).padStart(8, ' ')} ${money(current).padStart(10, ' ')}
+${scenario.b.padEnd(18, ' ')} ${money(otherBase).padStart(8, ' ')} ${money(otherCurrent).padStart(10, ' ')}
+
+根据表格，2025年${scenario.a}同比增长率为多少？（输入百分数数值，保留1位小数）`,
+      answer, unit: '%',
+      method: '先从表格中定位同一指标的两年数据，再用（现期量−基期量）÷基期量计算增长率。',
+      explain: `增长量=${money(current)}−${money(base)}=${money(current - base)}；增长率=${money(current - base)}÷${money(base)}=${answer}%。`,
+      level: '进阶',
+    };
+  }
 
   if (kind === 'growth') {
     const base = integer(240, 1800);
