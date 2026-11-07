@@ -124,11 +124,56 @@ ${scenario.b.padEnd(18, ' ')} ${money(otherBase).padStart(8, ' ')} ${money(other
     const average = integer(35, 260);
     const total = count * average;
     return {
-      id: makeId(), skill: 'growth', title: '平均数计算',
+      id: makeId(), skill: 'average', title: '平均数计算',
       prompt: `${scenario.name}一季度${scenario.a}总量为${money(total)}万元，平均每月为多少万元？`,
       answer: average,
       method: '平均数=总量÷份数。观察是否可以约分或拆分。',
       explain: `${money(total)}÷${count}=${average}万元。`,
+      level: '基础',
+    };
+  }
+
+
+  if (kind === 'compare') {
+    const a = integer(21, 89), b = integer(70, 160);
+    const c = integer(21, 89), d = integer(70, 160);
+    const left = a / b, right = c / d;
+    const answer = Number((Math.max(left, right) * 100).toFixed(2));
+    return {
+      id: makeId(), skill: 'compare', title: '分数大小比较',
+      prompt: `比较 ${a}/${b} 与 ${c}/${d}，较大的分数约为多少？（输入百分数数值，保留两位小数）`,
+      answer, unit: '%',
+      method: `使用交叉相乘：比较 ${a}×${d} 与 ${c}×${b}，先判断大小，再估算较大分数的百分数。`,
+      explain: `${a}/${b}≈${(left * 100).toFixed(2)}%，${c}/${d}≈${(right * 100).toFixed(2)}%，较大值约为${answer}%。`,
+      level: '进阶',
+    };
+  }
+
+  if (kind === 'multiply') {
+    const a = pick([24, 32, 36, 48, 64, 125]);
+    const b = pick([25, 125, 16, 32, 40, 80]);
+    const answer = a * b;
+    return {
+      id: makeId(), skill: 'multiply', title: '乘法拆分训练',
+      prompt: `快速计算：${a} × ${b} = ？`,
+      answer,
+      method: '寻找可凑整的因数，例如 25×4=100、125×8=1000，再调整剩余因数。',
+      explain: `${a}×${b}=${answer}。可以先把其中一个因数拆成便于凑整的乘积。`,
+      level: '基础',
+    };
+  }
+
+  if (kind === 'square') {
+    const base = pick([50, 100]);
+    const delta = integer(1, 9);
+    const n = base - delta;
+    const answer = n * n;
+    return {
+      id: makeId(), skill: 'square', title: '平方速算训练',
+      prompt: `快速计算：${n}² = ？`,
+      answer,
+      method: `利用平方差公式：(${base}−${delta})²=${base}²−2×${base}×${delta}+${delta}²。`,
+      explain: `${n}²=(${base}−${delta})²=${base * base}−${2 * base * delta}+${delta * delta}=${answer}。`,
       level: '基础',
     };
   }
