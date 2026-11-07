@@ -8,6 +8,7 @@ export type GeneratedQuestion = {
   method: string;
   explain: string;
   level: string;
+  chart?: { kind: 'bar' | 'line' | 'mix'; labels: string[]; values: number[]; seriesName: string; unit: string };
 };
 
 const scenarios = [
@@ -43,7 +44,7 @@ export function generateQuestion(filter = 'all'): GeneratedQuestion {
         ? `年份       ${years.join('   ')}\n${scenario.a}  ${values.join('   ')}\n变化趋势   ${values.map((v, i) => i ? (v >= values[i - 1] ? '↗' : '↘') : '—').join('   ')}`
         : bars;
     return {
-      id: makeId(), skill: 'growth', title: `资料分析${chartTitle}`,
+      id: makeId(), skill: 'growth', title: `资料分析${chartTitle}`, chart: { kind: chartType, labels: years, values, seriesName: scenario.a, unit: '亿元' },
       prompt: `${scenario.name}${scenario.a}变化情况（单位：亿元）\n${visual}\n\n根据图表，2025年${scenario.a}同比增长率为多少？（输入百分数数值，保留1位小数）`,
       answer: Number(rate.toFixed(1)), unit: '%',
       method: '先确认图表横轴年份和纵轴指标，读取2024、2025年对应数值，再计算（现期量−基期量）÷基期量。',
