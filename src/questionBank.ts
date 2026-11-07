@@ -23,8 +23,34 @@ const money = (n: number) => n.toLocaleString('zh-CN');
 const makeId = () => globalThis.crypto?.randomUUID?.() ?? `q-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 export function generateQuestion(filter = 'all'): GeneratedQuestion {
-  const kind = filter === 'all' ? pick(['growth', 'fraction', 'cut', 'average', 'table']) : filter;
+  const kind = filter === 'all' ? pick(['growth', 'fraction', 'cut', 'average', 'table', 'chart']) : filter;
   const scenario = pick(scenarios);
+
+
+  if (kind === 'chart') {
+    const base = integer(500, 1800);
+    const rate = pick([5, 8, 10, 12, 15, 20, 25]);
+    const current = base * (1 + rate / 100);
+    const chartType = pick(['bar', 'line', 'mix']);
+    const years = ['2022', '2023', '2024', '2025'];
+    const values = [Math.round(base * 0.78), Math.round(base * 0.86), base, current];
+    const max = Math.max(...values);
+    const bars = values.map((v, i) => `${years[i]}  ${'▇'.repeat(Math.max(1, Math.round(v / max * 18)))}  ${money(v)}`).join('\n');
+    const chartTitle = chartType === 'bar' ? '柱状图' : chartType === 'line' ? '折线图' : '混合图';
+    const visual = chartType === 'line'
+      ? `年份：${years.join('   ')}\n数值：${values.join('   ')}\n趋势：${values.map((v, i) => i ? (v >= values[i - 1] ? '↗' : '↘') : '—').join('   ')}`
+      : chartType === 'mix'
+        ? `年份       ${years.join('   ')}\n${scenario.a}  ${values.join('   ')}\n变化趋势   ${values.map((v, i) => i ? (v >= values[i - 1] ? '↗' : '↘') : '—').join('   ')}`
+        : bars;
+    return {
+      id: makeId(), skill: 'growth', title: `资料分析${chartTitle}`,
+      prompt: `${scenario.name}${scenario.a}变化情况（单位：亿元）\n${visual}\n\n根据图表，2025年${scenario.a}同比增长率为多少？（输入百分数数值，保留1位小数）`,
+      answer: Number(rate.toFixed(1)), unit: '%',
+      method: '先确认图表横轴年份和纵轴指标，读取2024、2025年对应数值，再计算（现期量−基期量）÷基期量。',
+      explain: `2024年为${money(base)}亿元，2025年为${money(current)}亿元；增长量=${money(current - base)}亿元，增长率=${money(current - base)}÷${money(base)}=${rate}%。`,
+      level: '进阶',
+    };
+  }
 
   if (kind === 'table') {
     const base = integer(600, 2400);
