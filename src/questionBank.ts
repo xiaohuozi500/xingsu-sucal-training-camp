@@ -1,182 +1,80 @@
 export type GeneratedQuestion = {
-  id: string;
-  skill: string;
-  title: string;
-  prompt: string;
-  answer: number;
-  unit?: string;
-  method: string;
-  explain: string;
-  level: string;
-  chart?: { kind: 'bar' | 'line' | 'mix'; labels: string[]; values: number[]; seriesName: string; unit: string };
+  id: string; skill: string; title: string; prompt: string; answer: number;
+  unit?: string; method: string; explain: string; level: string; options?: number[];
 };
-
-const scenarios = [
-  { name: '某市规模以上工业企业', a: '营业收入', b: '利润总额' },
-  { name: '某省重点监测企业', a: '主营业务收入', b: '研发投入' },
-  { name: '某地区公共财政', a: '一般公共预算收入', b: '民生支出' },
-  { name: '某市社会消费品零售', a: '零售总额', b: '限额以上零售额' },
-];
-
-const pick = <T,>(items: T[]): T => items[Math.floor(Math.random() * items.length)];
-const integer = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
-const money = (n: number) => n.toLocaleString('zh-CN');
-const makeId = () => globalThis.crypto?.randomUUID?.() ?? `q-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-
-export function generateQuestion(filter = 'all'): GeneratedQuestion {
-  const kind = filter === 'all' ? pick(['growth', 'fraction', 'cut', 'average', 'table', 'chart']) : filter;
-  const scenario = pick(scenarios);
-
-
-  if (kind === 'chart') {
-    const base = integer(500, 1800);
-    const rate = pick([5, 8, 10, 12, 15, 20, 25]);
-    const current = base * (1 + rate / 100);
-    const chartType = pick<'bar' | 'line' | 'mix'>(['bar', 'line', 'mix']);
-    const years = ['2022', '2023', '2024', '2025'];
-    const values = [Math.round(base * 0.78), Math.round(base * 0.86), base, current];
-    const max = Math.max(...values);
-    const bars = values.map((v, i) => `${years[i]}  ${'▇'.repeat(Math.max(1, Math.round(v / max * 18)))}  ${money(v)}`).join('\n');
-    const chartTitle = chartType === 'bar' ? '柱状图' : chartType === 'line' ? '折线图' : '混合图';
-    const visual = chartType === 'line'
-      ? `年份：${years.join('   ')}\n数值：${values.join('   ')}\n趋势：${values.map((v, i) => i ? (v >= values[i - 1] ? '↗' : '↘') : '—').join('   ')}`
-      : chartType === 'mix'
-        ? `年份       ${years.join('   ')}\n${scenario.a}  ${values.join('   ')}\n变化趋势   ${values.map((v, i) => i ? (v >= values[i - 1] ? '↗' : '↘') : '—').join('   ')}`
-        : bars;
-    return {
-      id: makeId(), skill: 'growth', title: `资料分析${chartTitle}`, chart: { kind: chartType, labels: years, values, seriesName: scenario.a, unit: '亿元' },
-      prompt: `${scenario.name}${scenario.a}变化情况（单位：亿元）\n${visual}\n\n根据图表，2025年${scenario.a}同比增长率为多少？（输入百分数数值，保留1位小数）`,
-      answer: Number(rate.toFixed(1)), unit: '%',
-      method: '先确认图表横轴年份和纵轴指标，读取2024、2025年对应数值，再计算（现期量−基期量）÷基期量。',
-      explain: `2024年为${money(base)}亿元，2025年为${money(current)}亿元；增长量=${money(current - base)}亿元，增长率=${money(current - base)}÷${money(base)}=${rate}%。`,
-      level: '进阶',
-    };
-  }
-
-  if (kind === 'table') {
-    const base = integer(600, 2400);
-    const rate = pick([6, 8, 10, 12, 15, 18, 20]);
-    const current = base * (1 + rate / 100);
-    const otherBase = integer(300, 1500);
-    const otherCurrent = Math.round(otherBase * (1 + pick([4, 9, 13, 17]) / 100));
-    const answer = Number(rate.toFixed(1));
-    return {
-      id: makeId(), skill: 'growth', title: '资料分析表格题',
-      prompt: `${scenario.name}主要指标统计（单位：亿元）
-指标                 2024年       2025年
-${scenario.a.padEnd(18, ' ')} ${money(base).padStart(8, ' ')} ${money(current).padStart(10, ' ')}
-${scenario.b.padEnd(18, ' ')} ${money(otherBase).padStart(8, ' ')} ${money(otherCurrent).padStart(10, ' ')}
-
-根据表格，2025年${scenario.a}同比增长率为多少？（输入百分数数值，保留1位小数）`,
-      answer, unit: '%',
-      method: '先从表格中定位同一指标的两年数据，再用（现期量−基期量）÷基期量计算增长率。',
-      explain: `增长量=${money(current)}−${money(base)}=${money(current - base)}；增长率=${money(current - base)}÷${money(base)}=${answer}%。`,
-      level: '进阶',
-    };
-  }
-
-  if (kind === 'growth') {
-    const base = integer(240, 1800);
-    const rate = pick([5, 8, 10, 12, 15, 20, 25]);
-    const current = base * (1 + rate / 100);
-    return {
-      id: makeId(), skill: 'growth', title: '增长率与现期量',
-      prompt: `${scenario.name}去年${scenario.a}为${money(base)}亿元，今年同比增长${rate}%。今年${scenario.a}为多少亿元？`,
-      answer: current,
-      method: `现期量=基期量×(1+增长率)。先算 ${money(base)}×(1+${rate}%)。`,
-      explain: `${money(base)}×${(1 + rate / 100).toFixed(2)}=${money(current)}亿元。注意增长率要先加1再相乘。`,
-      level: '基础',
-    };
-  }
-
-  if (kind === 'fraction') {
-    const base = integer(8, 80) * 40;
-    const rate = pick([12.5, 16.6666666667, 20, 25, 33.3333333333, 40, 50]);
-    const increase = base * rate / 100;
-    const answer = Number(rate.toFixed(1));
-    return {
-      id: makeId(), skill: 'fraction', title: '特征分数与增长率',
-      prompt: `${scenario.name}去年${scenario.b}为${money(base)}亿元，今年比去年增加${money(increase)}亿元。增长率约为多少？（输入百分数数值，保留1位小数）`,
-      answer, unit: '%',
-      method: `增长率=增长量÷基期量=${money(increase)}÷${money(base)}。观察分数特征，转化为熟悉百分数。`,
-      explain: `${money(increase)}÷${money(base)}=${(rate / 100).toFixed(6)}，约为${answer}%。`,
-      level: '基础',
-    };
-  }
-
-  if (kind === 'cut') {
-    const denominator = integer(32, 96) * 100;
-    const numerator = integer(12, 88) * 100;
-    const raw = numerator / denominator;
-    const answer = Number(raw.toFixed(3));
-    return {
-      id: makeId(), skill: 'cut', title: '截位直除',
-      prompt: `某项指标为${money(numerator)}，另一项指标为${money(denominator)}，求前者是后者的多少倍？（保留三位小数）`,
-      answer,
-      method: '先判断数量级，再将分子分母同步截位，优先保留前三位有效数字。',
-      explain: `${money(numerator)}÷${money(denominator)}=${raw.toFixed(6)}，保留三位小数为${answer.toFixed(3)}。`,
-      level: '进阶',
-    };
-  }
-
-  if (kind === 'average') {
-    const count = integer(4, 12);
-    const average = integer(35, 260);
-    const total = count * average;
-    return {
-      id: makeId(), skill: 'average', title: '平均数计算',
-      prompt: `${scenario.name}一季度${scenario.a}总量为${money(total)}万元，平均每月为多少万元？`,
-      answer: average,
-      method: '平均数=总量÷份数。观察是否可以约分或拆分。',
-      explain: `${money(total)}÷${count}=${average}万元。`,
-      level: '基础',
-    };
-  }
-
-
-  if (kind === 'compare') {
-    const a = integer(21, 89), b = integer(70, 160);
-    const c = integer(21, 89), d = integer(70, 160);
-    const left = a / b, right = c / d;
-    const answer = Number((Math.max(left, right) * 100).toFixed(2));
-    return {
-      id: makeId(), skill: 'compare', title: '分数大小比较',
-      prompt: `比较 ${a}/${b} 与 ${c}/${d}，较大的分数约为多少？（输入百分数数值，保留两位小数）`,
-      answer, unit: '%',
-      method: `使用交叉相乘：比较 ${a}×${d} 与 ${c}×${b}，先判断大小，再估算较大分数的百分数。`,
-      explain: `${a}/${b}≈${(left * 100).toFixed(2)}%，${c}/${d}≈${(right * 100).toFixed(2)}%，较大值约为${answer}%。`,
-      level: '进阶',
-    };
-  }
-
-  if (kind === 'multiply') {
-    const a = pick([24, 32, 36, 48, 64, 125]);
-    const b = pick([25, 125, 16, 32, 40, 80]);
-    const answer = a * b;
-    return {
-      id: makeId(), skill: 'multiply', title: '乘法拆分训练',
-      prompt: `快速计算：${a} × ${b} = ？`,
-      answer,
-      method: '寻找可凑整的因数，例如 25×4=100、125×8=1000，再调整剩余因数。',
-      explain: `${a}×${b}=${answer}。可以先把其中一个因数拆成便于凑整的乘积。`,
-      level: '基础',
-    };
-  }
-
-  if (kind === 'square') {
-    const base = pick([50, 100]);
-    const delta = integer(1, 9);
-    const n = base - delta;
-    const answer = n * n;
-    return {
-      id: makeId(), skill: 'square', title: '平方速算训练',
-      prompt: `快速计算：${n}² = ？`,
-      answer,
-      method: `利用平方差公式：(${base}−${delta})²=${base}²−2×${base}×${delta}+${delta}²。`,
-      explain: `${n}²=(${base}−${delta})²=${base * base}−${2 * base * delta}+${delta * delta}=${answer}。`,
-      level: '基础',
-    };
-  }
-
-  return generateQuestion('all');
+const pick = <T,>(a:T[]):T => a[Math.floor(Math.random()*a.length)];
+const int = (a:number,b:number) => Math.floor(Math.random()*(b-a+1))+a;
+const id = () => globalThis.crypto?.randomUUID?.() ?? "q-"+Date.now()+"-"+Math.random();
+const fmt = (n:number) => Math.round(n*100)/100;
+const money = (n:number) => Math.round(n).toLocaleString("zh-CN");
+const names = ["某市规模以上工业企业营业收入","某省社会消费品零售总额","某地区一般公共预算收入","某市高新技术企业研发投入","某省粮食总产量"];
+function makeOptions(answer:number, unitScale=1):number[] {
+  const a=fmt(answer), candidates=[a,fmt(answer*1.1),fmt(answer*0.9),fmt(answer+unitScale),fmt(answer-unitScale),fmt(answer*1.01)];
+  const unique=Array.from(new Set(candidates)).filter(x=>Number.isFinite(x));
+  while(unique.length<4) unique.push(fmt(answer+(unique.length+1)*unitScale*0.7));
+  return unique.slice(0,4).sort(()=>Math.random()-.5);
+}
+export function generateQuestion(filter="all"):GeneratedQuestion {
+ const types=["base","current","increase","rate","share","average","multiple","shareChange"];
+ const kind=filter==="all"?pick(types):filter;
+ const subject=pick(names), unit=pick(["亿元","万人","万吨","万件"]);
+ if(kind==="base"){
+  const base=int(800,5200), rate=pick([0.08,0.12,0.15,0.18,0.2,0.25]), current=Math.round(base*(1+rate));
+  const answer=base;
+  return {id:id(),skill:kind,title:"基期量 · 反求上年数据",prompt:subject+"本期为"+money(current)+unit+"，同比增长"+(rate*100)+"%。上年同期约为多少"+unit+"？",answer,unit:unit,options:makeOptions(answer,50),level:"基础",
+   method:"题目给出现期量和增长率，求基期量。不要用现期量直接乘增长率；应当除以增长率对应的倍数。",
+   explain:"①定位：本期="+money(current)+unit+"，增长率="+(rate*100)+"%。②关系：基期量=现期量÷(1+增长率)。③速算："+money(current)+"÷"+(1+rate)+"。可把除数化成整数比，例如÷1.2等于×5÷6。④结果约为"+money(answer)+unit+"。",
+  };
+ }
+ if(kind==="current"){
+  const base=int(700,4600), rate=pick([0.06,0.1,0.12,0.15,0.2,0.25]), answer=Math.round(base*(1+rate));
+  return {id:id(),skill:kind,title:"现期量 · 基期推现期",prompt:subject+"上年为"+money(base)+unit+"，本年同比增长"+(rate*100)+"%。本年约为多少"+unit+"？",answer,unit,options:makeOptions(answer,50),level:"基础",
+   method:"现期量=基期量×(1+增长率)。把增长率拆成原量和增量，先算基期量，再加增长量。",
+   explain:"①增长量="+money(base)+"×"+(rate*100)+"%≈"+money(base*rate)+"。②现期量="+money(base)+"+"+money(base*rate)+"≈"+money(answer)+unit+"。③速算可拆分："+money(base)+"×"+(1+rate)+"。若增长率为15%，就算×(1+10%+5%)。",
+  };
+ }
+ if(kind==="increase"){
+  const base=int(900,6000), rate=pick([0.08,0.1,0.12,0.15,0.18,0.2]), answer=Math.round(base*rate);
+  return {id:id(),skill:kind,title:"增长量 · 基期乘增长率",prompt:subject+"上年为"+money(base)+unit+"，本年同比增长"+(rate*100)+"%。本年比上年增加多少"+unit+"？",answer,unit,options:makeOptions(answer,20),level:"基础",
+   method:"增长量=基期量×增长率。先把百分数转成易算分数，或拆成10%+5%等部分。",
+   explain:"①问“增加多少”，不是问本期总量。②增长量="+money(base)+"×"+(rate*100)+"%。③拆算示例："+(rate===0.15?"×15%=×(10%+5%)":"将增长率化为熟悉分数或拆成整十百分数") +"。④结果="+money(answer)+unit+"。注意不能把现期量乘增长率。",
+  };
+ }
+ if(kind==="rate"){
+  const base=int(800,5200), rate=pick([0.08,0.1,0.125,0.15,0.2,0.25]), inc=Math.round(base*rate), answer=fmt(inc/base*100);
+  return {id:id(),skill:kind,title:"增长率 · 特征分数与截位直除",prompt:subject+"上年为"+money(base)+unit+"，本年增加"+money(inc)+unit+"。同比增长率约为多少？（输入百分数）",answer,unit:"%",options:makeOptions(answer,1),level:"进阶",
+   method:"增长率=增长量÷基期量。优先约分识别特征分数；不能整除时再用截位直除。",
+   explain:"①分子是增长量"+money(inc)+"，分母是基期量"+money(base)+"。②列式："+money(inc)+"÷"+money(base)+"。③先观察能否约分为1/8、1/6、1/5、1/4、1/3等；若不能，分子分母同步截位保留前三位有效数字。④约为"+answer+"%。",
+  };
+ }
+ if(kind==="share"){
+  const total=int(1800,9000), share=pick([0.12,0.15,0.2,0.25,0.3,0.4]), part=Math.round(total*share), answer=fmt(part/total*100);
+  return {id:id(),skill:kind,title:"比重 · 部分占整体",prompt:subject+"总量为"+money(total)+unit+"，其中某部分为"+money(part)+unit+"。该部分占总量的比重约为多少？（输入百分数）",answer,unit:"%",options:makeOptions(answer,1),level:"基础",
+   method:"比重=部分量÷整体量。先把分子分母同时缩小，再识别常见分数或估算。",
+   explain:"①确认谁是部分、谁是整体：部分="+money(part)+"，整体="+money(total)+"。②比重="+money(part)+"÷"+money(total)。③若约分后接近1/5、1/4、1/3等，直接换成20%、25%、33.3%；否则截位直除。④约为"+answer+"%。",
+  };
+ }
+ if(kind==="average"){
+  const count=int(6,18), avg=int(45,360), total=count*avg, rate=pick([0.08,0.1,0.12,0.15]), answer=avg;
+  return {id:id(),skill:kind,title:"平均数 · 总量除以份数",prompt:subject+"某季度总量为"+money(total)+"万元，共"+count+"个月。月均量为多少万元？",answer,unit:"万元",options:makeOptions(answer,5),level:"基础",
+   method:"平均数=总量÷份数。优先约分；如果总量不整除，可用截位估算。比较平均数增长时，必须同时考虑总量和份数变化。",
+   explain:"①明确总量="+money(total)+"万元，份数="+count+"。②平均数="+money(total)+"÷"+count+"。③可先约分或拆成整百、整十再除。④结果="+answer+"万元。易错：不要把总量增长率直接当成平均数增长率。",
+  };
+ }
+ if(kind==="multiple"){
+  const b=int(900,5000), k=pick([1.2,1.25,1.5,1.6,1.8,2]), a=Math.round(b*k), answer=fmt(a/b);
+  return {id:id(),skill:kind,title:"倍数 · A是B的几倍",prompt:subject+"中，A为"+money(a)+unit+"，B为"+money(b)+unit。A是B的多少倍？（保留两位小数）",answer,unit:"倍",options:makeOptions(answer,0.1),level:"进阶",
+   method:"倍数=A÷B。先判断数量级，再约分或截位直除。注意“A是B的几倍”不等于“A比B增长百分之几”。",
+   explain:"①确定被比较量A="+money(a)+"，标准量B="+money(b)+"。②倍数="+money(a)+"÷"+money(b)+"。③同步截位："+money(a)+"÷"+money(b)+"≈"+answer+"。④结果约"+answer+"倍。若题目问“多几倍”，还需再减1。",
+  };
+ }
+ // 两期比重变化：本期部分占比 - 基期部分占比
+ const total0=int(3000,9000), partRate0=pick([0.18,0.22,0.25,0.3,0.35]), totalRate=pick([0.08,0.1,0.12,0.15]), partRate=totalRate+pick([-0.06,-0.03,0.03,0.05]), partRate1=Math.max(0.08,partRate0+partRate);
+ const total1=Math.round(total0*(1+totalRate)), part0=Math.round(total0*partRate0), part1=Math.round(total1*partRate1);
+ const answer=fmt((part1/total1-part0/total0)*100);
+ const direction=answer>0?"上升":"下降";
+ return {id:id(),skill:"shareChange",title:"两期比重变化 · 看部分增速与整体增速",prompt:subject+"上年总量"+money(total0)+unit+"，其中A部分占"+(part0/total0*100).toFixed(1)+"%；本年总量同比增长"+(totalRate*100).toFixed(0)+"%，A部分同比增长"+((part1/part0-1)*100).toFixed(1)+"%。本年A部分占比比上年变化多少个百分点？（可输入正负数）",answer,unit:"个百分点",options:makeOptions(answer,0.5),level:"进阶",
+  method:"两期比重变化不必先算出两个比重。核心判断：部分增速a与整体增速b比较；a>b，比重上升；a<b，比重下降。变化量用两期比重相减。",
+  explain:"①部分增速约"+((part1/part0-1)*100).toFixed(1)+"%，整体增速"+(totalRate*100).toFixed(0)+"%。②部分增速大于整体增速，因此比重上升。③精算：本期比重="+(part1/total1*100).toFixed(2)+"%，基期比重="+(part0/total0*100).toFixed(2)+"%。④变化="+answer+"个百分点。速算判断方向先比较两个增速，求幅度再用两期比重相减。",
+ };
 }
