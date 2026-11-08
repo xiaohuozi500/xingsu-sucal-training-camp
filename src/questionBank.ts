@@ -51,11 +51,11 @@ export function generateQuestion(filter="all"):GeneratedQuestion {
   const total=int(1800,9000), share=pick([0.12,0.15,0.2,0.25,0.3,0.4]), part=Math.round(total*share), answer=fmt(part/total*100);
   return {id:id(),skill:kind,title:"比重 · 部分占整体",prompt:subject+"总量为"+money(total)+unit+"，其中某部分为"+money(part)+unit+"。该部分占总量的比重约为多少？（输入百分数）",answer,unit:"%",options:makeOptions(answer,1),level:"基础",
    method:"比重=部分量÷整体量。先把分子分母同时缩小，再识别常见分数或估算。",
-   explain:"①确认谁是部分、谁是整体：部分="+money(part)+"，整体="+money(total)+"。②比重="+money(part)+"÷"+money(total)。③若约分后接近1/5、1/4、1/3等，直接换成20%、25%、33.3%；否则截位直除。④约为"+answer+"%。",
+   explain:"①确认谁是部分、谁是整体：部分="+money(part)+"，整体="+money(total)+"。②比重="+money(part)+"÷"+money(total)。③若约分后接近常见分数，直接换成对应百分数；否则截位直除。④约为"+answer+"%。",
   };
  }
  if(kind==="average"){
-  const count=int(6,18), avg=int(45,360), total=count*avg, rate=pick([0.08,0.1,0.12,0.15]), answer=avg;
+  const count=int(6,18), avg=int(45,360), total=count*avg, answer=avg;
   return {id:id(),skill:kind,title:"平均数 · 总量除以份数",prompt:subject+"某季度总量为"+money(total)+"万元，共"+count+"个月。月均量为多少万元？",answer,unit:"万元",options:makeOptions(answer,5),level:"基础",
    method:"平均数=总量÷份数。优先约分；如果总量不整除，可用截位估算。比较平均数增长时，必须同时考虑总量和份数变化。",
    explain:"①明确总量="+money(total)+"万元，份数="+count+"。②平均数="+money(total)+"÷"+count+"。③可先约分或拆成整百、整十再除。④结果="+answer+"万元。易错：不要把总量增长率直接当成平均数增长率。",
@@ -63,7 +63,7 @@ export function generateQuestion(filter="all"):GeneratedQuestion {
  }
  if(kind==="multiple"){
   const b=int(900,5000), k=pick([1.2,1.25,1.5,1.6,1.8,2]), a=Math.round(b*k), answer=fmt(a/b);
-  return {id:id(),skill:kind,title:"倍数 · A是B的几倍",prompt:subject+"中，A为"+money(a)+unit+"，B为"+money(b)+unit。A是B的多少倍？（保留两位小数）",answer,unit:"倍",options:makeOptions(answer,0.1),level:"进阶",
+  return {id:id(),skill:kind,title:"倍数 · A是B的几倍",prompt:subject+"中，A为"+money(a)+unit+"，B为"+money(b)+unit+"。A是B的多少倍？（保留两位小数）",answer,unit:"倍",options:makeOptions(answer,0.1),level:"进阶",
    method:"倍数=A÷B。先判断数量级，再约分或截位直除。注意“A是B的几倍”不等于“A比B增长百分之几”。",
    explain:"①确定被比较量A="+money(a)+"，标准量B="+money(b)+"。②倍数="+money(a)+"÷"+money(b)+"。③同步截位："+money(a)+"÷"+money(b)+"≈"+answer+"。④结果约"+answer+"倍。若题目问“多几倍”，还需再减1。",
   };
