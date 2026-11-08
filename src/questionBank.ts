@@ -51,7 +51,7 @@ export function generateQuestion(filter="all"):GeneratedQuestion {
   const total=int(1800,9000), share=pick([0.12,0.15,0.2,0.25,0.3,0.4]), part=Math.round(total*share), answer=fmt(part/total*100);
   return {id:id(),skill:kind,title:"比重 · 部分占整体",prompt:subject+"总量为"+money(total)+unit+"，其中某部分为"+money(part)+unit+"。该部分占总量的比重约为多少？（输入百分数）",answer,unit:"%",options:makeOptions(answer,1),level:"基础",
    method:"比重=部分量÷整体量。先把分子分母同时缩小，再识别常见分数或估算。",
-   explain:"①确认谁是部分、谁是整体：部分="+money(part)+"，整体="+money(total)+"。②比重="+money(part)+"÷"+money(total)。③若约分后接近常见分数，直接换成对应百分数；否则截位直除。④约为"+answer+"%。",
+    explain:"先定位部分量和整体量。比重=部分量÷整体量。先约分，再识别常见分数；不能约分时同步截位直除。答案约"+answer+"%。",
   };
  }
  if(kind==="average"){
