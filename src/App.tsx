@@ -103,8 +103,8 @@ const reportDaily=reportDateKeys.map(date=>{const xs=records.filter(r=>r.date===
 const reportRecent=records.filter(r=>reportDateKeys.includes(r.date));
 const reportPreviousKeys=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(13-i));return d.toLocaleDateString('zh-CN')});
 const reportPrevious=records.filter(r=>reportPreviousKeys.includes(r.date));
-const reportRate=xs=>xs.length?Math.round(xs.filter(r=>r.correct).length/xs.length*100):0;
-const reportAvg=xs=>xs.length?Math.round(xs.reduce((a,r)=>a+r.seconds,0)/xs.length):0;
+const reportRate=(xs:Rec[])=>xs.length?Math.round(xs.filter(r=>r.correct).length/xs.length*100):0;
+const reportAvg=(xs:Rec[])=>xs.length?Math.round(xs.reduce((a,r)=>a+r.seconds,0)/xs.length):0;
 const reportSkillData=skills.slice(0,6).map(s=>{const xs=reportRecent.filter(r=>r.question.skill===s.id);return {...s,rate:reportRate(xs),count:xs.length}});
 const reportExam=examHistory.slice(0,6).reverse();
 
