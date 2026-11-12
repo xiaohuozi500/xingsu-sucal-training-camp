@@ -150,7 +150,7 @@ const coachTarget=learningStats.find(x=>x.count>0)||learningStats[0];
 const adaptiveCauseNames=['题型识别错误','数据定位错误','算法选择错误','计算执行错误'];
 const adaptiveCauseStats=adaptiveCauseNames.map(cause=>({cause,count:new Set(wrong.filter(r=>(wrongCauses[r.question.id]||'待归因')===cause).map(r=>r.question.id)).size})).sort((a,b)=>b.count-a.count);
 const adaptiveCause=adaptiveCauseStats[0]?.count?adaptiveCauseStats[0].cause:(weakest?.id?'计算执行错误':'题型识别错误');
-const adaptiveCauseTips:Record<string,{title:string;detail:string;target:string}>={
+const adaptiveCauseTips:Record<string,{title:string;detail:string;target:'ability'|'locate'|'algorithm'|'calculation'}>={
 '题型识别错误':{title:'先练题型识别',detail:'暂时不做计算，先从题干关键词判断所求量，区分增长量、增长率、基期量和比重。',target:'ability'},
 '数据定位错误':{title:'先练材料定位',detail:'先核对统计对象、年份、指标和单位，再选择数据组合，避免看对数字却找错行。',target:'locate'},
 '算法选择错误':{title:'先练算法选择',detail:'对比特征分数、截位直除和首数估算的适用场景，先选方法再计算。',target:'algorithm'},
