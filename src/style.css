@@ -205,3 +205,5 @@
 /* Course mastery checkpoint */
 .lesson-footer{position:relative}
 .lesson-footer p{line-height:1.9}
+
+.due-review-banner{border-color:#d8e4f2;background:#f5f8fc}.due-review-banner b{color:#344e70}.due-review-banner p{line-height:1.8}
