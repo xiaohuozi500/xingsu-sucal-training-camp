@@ -236,3 +236,12 @@
 .adaptive-recommendation .primary{flex:none}
 .adaptive-evidence{margin-top:11px;color:#8997a8;font-size:10px;line-height:1.6}
 @media(max-width:760px){.adaptive-four-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.adaptive-recommendation{align-items:stretch;flex-direction:column}.adaptive-recommendation .primary{width:100%}.adaptive-teaching-panel{padding:14px}}
+
+/* Formula teaching: readable plain-language explanation and worked example */
+.lesson-formula-meaning{margin:10px 0 14px;padding:11px 13px;border-left:3px solid #83a6d5;border-radius:0 8px 8px 0;background:#f1f6fc;color:#435a76;font-size:13px;line-height:1.85}
+.lesson-flow-item{min-width:0;flex:1}
+.lesson-flow-item>span{display:flex;align-items:center;justify-content:center;min-height:54px;padding:10px 12px;text-align:center;line-height:1.55;white-space:normal;overflow-wrap:anywhere}
+.lesson-worked-example{margin-top:14px;padding:13px 15px;border:1px solid #dce7f4;border-radius:10px;background:#fff}
+.lesson-worked-example strong{display:block;margin-bottom:5px;color:#345477;font-size:12px}
+.lesson-worked-example p{margin:0;color:#43536a;font-size:13px;line-height:1.85;overflow-wrap:anywhere}
+@media(max-width:680px){.lesson-flow{align-items:stretch;gap:5px}.lesson-flow-item{display:flex;align-items:center;gap:4px}.lesson-flow-item>span{font-size:11px;padding:8px 5px;min-height:62px}.lesson-flow-item>svg{flex:none;width:12px}}
