@@ -9,10 +9,22 @@ const fmt = (n:number) => Math.round(n*100)/100;
 const money = (n:number) => Math.round(n).toLocaleString("zh-CN");
 const names = ["某市规模以上工业企业营业收入","某省社会消费品零售总额","某地区一般公共预算收入","某市高新技术企业研发投入","某省粮食总产量"];
 function makeOptions(answer:number, unitScale=1):number[] {
-  const a=fmt(answer), candidates=[a,fmt(answer*1.1),fmt(answer*0.9),fmt(answer+unitScale),fmt(answer-unitScale),fmt(answer*1.01)];
-  const unique=Array.from(new Set(candidates)).filter(x=>Number.isFinite(x));
-  while(unique.length<4) unique.push(fmt(answer+(unique.length+1)*unitScale*0.7));
-  return unique.slice(0,4).sort(()=>Math.random()-.5);
+  // 以正确值为中心构造可解释的常见误差：比例误判、基数偏差、单位/截位误差。
+  const a=fmt(answer);
+  const step=Math.max(Math.abs(answer)*0.06,Math.abs(unitScale)*0.5,0.01);
+  const candidates=[a,fmt(answer*0.9),fmt(answer*1.1),fmt(answer-step),fmt(answer+step),fmt(answer*0.8),fmt(answer*1.2),fmt(answer+Math.max(unitScale,step*2)),fmt(answer-Math.max(unitScale,step*2))];
+  const unique:number[]=[];
+  for(const value of candidates){
+    if(Number.isFinite(value)&&!unique.some(x=>Math.abs(x-value)<0.000001)) unique.push(value);
+  }
+  // 小数答案经两位小数展示；极小数或特殊单位下仍保证四个不同选项。
+  let offset=1;
+  while(unique.length<4&&offset<30){
+    const candidate=fmt(answer+step*offset++);
+    if(!unique.some(x=>Math.abs(x-candidate)<0.000001))unique.push(candidate);
+  }
+  if(!unique.some(x=>Math.abs(x-a)<0.000001))unique[0]=a;
+  return [a,...unique.filter(x=>Math.abs(x-a)>=0.000001).slice(0,3)].sort(()=>Math.random()-.5);
 }
 export function generateQuestion(filter="all"):GeneratedQuestion {
  const types=["base","current","increase","rate","share","average","multiple","shareChange"];
