@@ -178,3 +178,26 @@
 .coach-skill-card>p{font-size:10px;color:#8491a3;margin:0 0 12px}
 .coach-note{margin-top:18px;padding:15px 17px;background:#f6f8fb;border-radius:12px}.coach-note b{font-size:12px}.coach-note p{font-size:11px;color:#718198;line-height:1.9;margin:6px 0 0}
 @media(max-width:700px){.coach-hero{padding:19px;align-items:flex-start}.coach-hero h2{font-size:18px}.coach-score{min-width:82px;padding-left:12px}.coach-score b{font-size:25px}.coach-next{align-items:flex-start;flex-direction:column}.coach-skill-grid{grid-template-columns:1fr}.coach-section-head{align-items:flex-start;gap:10px;flex-direction:column}}
+
+/* Progressive curriculum: reveal only the current learning phase */
+.path-welcome{padding:25px 28px;border-radius:17px;background:linear-gradient(115deg,#182d47,#2c4c70);color:#fff;margin:0 0 20px}
+.path-welcome>small{font-size:10px;letter-spacing:1.4px;color:#c5d2e1}.path-welcome h2{font-size:23px;margin:9px 0}.path-welcome p{font-size:12px;color:#d2dce8;line-height:1.8;margin:0 0 17px}.path-welcome>span{display:block;font-size:10px;color:#d5deea;margin-top:8px}
+.path-overall{height:6px;max-width:440px;background:#ffffff35;border-radius:8px;overflow:hidden}.path-overall i{display:block;height:100%;background:#b6d1f5;border-radius:8px;transition:width .2s}
+.path-stage-card{background:#fff;border:1px solid #e5ebf2;border-radius:16px;padding:23px;margin-bottom:17px;box-shadow:0 5px 18px #253a5510}
+.path-stage-card.unlocked{border-color:#cbd9ea}
+.path-stage-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:19px}
+.path-stage-head span{font-size:10px;color:#6c86a9;font-weight:700;letter-spacing:.4px}
+.path-stage-head h2{font-size:20px;margin:6px 0}.path-stage-head p{font-size:12px;color:#78879b;line-height:1.8;margin:0;max-width:660px}
+.path-stage-number{font-size:27px;color:#d9e2ee;font-weight:700}
+.path-course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.path-course{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;padding:15px;border:1px solid #e7edf4;border-radius:11px;background:#fbfcfe;cursor:pointer;min-height:130px;transition:border-color .15s,background .15s}
+.path-course:hover{border-color:#9db2d2;background:#f5f8fc}.path-course.completed{background:#f2f8f4;border-color:#d4e8da}
+.path-course>span{font-size:10px;color:#8291a5}.path-course>b{font-size:14px;color:#29394e}.path-course>small{font-size:10px;color:#8290a2;line-height:1.6}.path-course>em{font-size:10px;color:#5676a4;font-style:normal;margin-top:auto}.path-course.completed>em{color:#3b8a5e}
+.path-stage-foot{border-top:1px solid #edf1f5;margin-top:17px;padding-top:13px;display:flex;align-items:center;gap:13px;flex-wrap:wrap;font-size:11px;color:#687a91}
+.path-stage-progress{height:6px;width:150px;background:#edf1f5;border-radius:8px;overflow:hidden}.path-stage-progress i{height:100%;display:block;background:#7898c7;border-radius:8px}.path-stage-foot>small{font-size:10px;color:#93a0b0}
+.path-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.path-action-grid button{display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:17px;border:1px solid #e7edf4;border-radius:11px;background:#fbfcfe;cursor:pointer;min-height:110px}
+.path-action-grid button:hover{background:#f5f8fc;border-color:#9db2d2}.path-action-grid b{font-size:13px;color:#29394e}.path-action-grid small{font-size:10px;color:#8290a2;line-height:1.6}.path-action-grid em{font-size:10px;color:#5676a4;font-style:normal;margin-top:auto}
+.lesson-course-picker button.completed{border-color:#d4e8da;background:#f2f8f4}
+@media(max-width:800px){.path-course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.path-action-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.path-welcome{padding:19px}.path-welcome h2{font-size:19px}.path-stage-card{padding:16px}.path-course-grid,.path-action-grid{grid-template-columns:1fr}.path-course{min-height:108px}.path-stage-head h2{font-size:18px}}
