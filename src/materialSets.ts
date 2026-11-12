@@ -6,7 +6,7 @@ export type MaterialSet = {
  chart?:{kind:'bar'|'line'|'mix';labels:string[];values:number[];seriesName:string;unit:string};
  questions:MaterialQuestion[];
 };
-const q=(id:string,skill:string,title:string,prompt:string,answer:number,unit:string,method:string,explain:string,options:number[]):MaterialQuestion=>({id,skill,title,prompt,answer,unit,method,explain,level:'材料题',options});
+const q=(id:string,skill:string,title:string,prompt:string,answer:number,unit:string,method:string,explain:string,options:number[]):MaterialQuestion=>({id,skill,title,prompt,answer,unit,method,explain,level:skill==='shareChange'?'挑战':(['average','multiple','rate'].includes(skill)?'进阶':'基础'),options});
 export const materialSets:MaterialSet[]=[
 {id:'text-material',title:'材料一：新能源产业发展情况',kind:'text',source:'2024年，某省新能源产业实现营业收入 2,400 亿元，同比增长 20%；其中动力电池产业营业收入 900 亿元，同比增长 25%。同期全省新能源产业从业人员 30 万人，比上年增加 3 万人。2024年全省新能源产业研发经费支出 180 亿元，较上年增加 20 亿元。',questions:[
 q('mt1','base','基期量','2024年该省新能源产业营业收入为2,400亿元，同比增长20%。2023年营业收入约为多少亿元？',2000,'亿元','基期=现期÷(1+增长率)。20%对应1.2，除以1.2等于乘5/6。','2400÷1.2=2000亿元。不要用2400×80%求基期。',[1800,1920,2000,2100]),
