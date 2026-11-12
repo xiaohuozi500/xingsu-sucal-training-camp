@@ -219,3 +219,20 @@
 .cause-diagnostic-note strong{font-size:22px;color:#334f70}
 .cause-diagnostic-note small{font-size:10px;line-height:1.5;color:#8795a8}
 @media(max-width:760px){.cause-diagnostic-note{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Stage 7 adaptive teaching panel */
+.adaptive-teaching-panel{margin:0 0 20px;padding:20px;border:1px solid #dfe7f1;border-radius:16px;background:linear-gradient(145deg,#fbfdff,#f5f8fc)}
+.adaptive-teaching-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.adaptive-teaching-head small{font-size:10px;letter-spacing:.12em;color:#8292a8;font-weight:700}
+.adaptive-teaching-head h2{margin:6px 0;font-size:19px;color:#263b55}
+.adaptive-teaching-head p{margin:0;color:#78889d;font-size:12px;line-height:1.7}
+.adaptive-ai-mark{flex:none;padding:6px 10px;border:1px solid #d9e4f1;border-radius:20px;background:#fff;color:#5d7799;font-size:11px}
+.adaptive-four-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:17px 0}
+.adaptive-step{display:flex;flex-direction:column;gap:5px;padding:11px;border:1px solid #e4eaf2;border-radius:10px;background:#fff}
+.adaptive-step>span{font-size:10px;color:#9aa8b8}.adaptive-step>b{font-size:12px;color:#40546d}.adaptive-step>strong{font-size:10px;color:#8796a9;font-weight:500}
+.adaptive-step.active{border-color:#9db7dc;background:#f0f5fc}.adaptive-step.active>b,.adaptive-step.active>strong{color:#41658f}
+.adaptive-recommendation{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:15px;border-radius:11px;background:#fff;border:1px solid #e6ecf3}
+.adaptive-recommendation small{font-size:10px;color:#8292a8}.adaptive-recommendation h3{margin:5px 0;font-size:15px;color:#2d425d}.adaptive-recommendation p{margin:0;color:#718198;font-size:12px;line-height:1.7}
+.adaptive-recommendation .primary{flex:none}
+.adaptive-evidence{margin-top:11px;color:#8997a8;font-size:10px;line-height:1.6}
+@media(max-width:760px){.adaptive-four-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.adaptive-recommendation{align-items:stretch;flex-direction:column}.adaptive-recommendation .primary{width:100%}.adaptive-teaching-panel{padding:14px}}
