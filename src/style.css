@@ -201,3 +201,7 @@
 .lesson-course-picker button.completed{border-color:#d4e8da;background:#f2f8f4}
 @media(max-width:800px){.path-course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.path-action-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.path-welcome{padding:19px}.path-welcome h2{font-size:19px}.path-stage-card{padding:16px}.path-course-grid,.path-action-grid{grid-template-columns:1fr}.path-course{min-height:108px}.path-stage-head h2{font-size:18px}}
+
+/* Course mastery checkpoint */
+.lesson-footer{position:relative}
+.lesson-footer p{line-height:1.9}
